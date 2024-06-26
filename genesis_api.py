@@ -1,5 +1,35 @@
 import requests # Documentation: http://requests.readthedocs.io
 
+def show_response(response: dict, path: str):
+    
+    with open(path,"w") as fobj:
+        for section, content in response.items():
+            
+            # Formatting and writing of section titles
+            fobj.write("{:*^50}\n".format(section))
+            
+            # Formatting and writing of dictionaries
+            if type(content) == dict:
+                for param, specifics in content.items():
+                    fobj.write("{}: {}\n".format(param, specifics))
+                fobj.write("\n")
+            
+            # Formatting and writing of lists
+            elif type(content) == list:
+                for elem in content:
+                    if type(elem) == dict:
+                        for param, specifics in elem.items():
+                            fobj.write("{}: {}\n".format(param, specifics))
+                        fobj.write("\n")
+                    else:
+                        fobj.write("{}\n".format(elem))
+                        fobj.write("\n")
+            
+            # Formatting and writing of other information
+            else:
+                fobj.write("{}\n".format(content))
+                fobj.write("\n")
+
 def whoami():
     '''
     Method for testing the address.
@@ -68,22 +98,10 @@ def find(username: str, password: str, term: str, category: str = "all", pagelen
                            params = params)
     # print(request.status_code)
     response = request.json()
-    
-    with open("find.txt","w") as fobj:
-        for key, value in response.items():
-            fobj.write("{:*^50}\n".format(key))
-            if type(value) == dict:
-                for param, specifics in value.items():
-                    fobj.write("{}: {}\n".format(param, specifics))
-                fobj.write("\n")
-            elif type(value) == list:
-                for hit in value:
-                    if type(hit) == dict:
-                        for param, specifics in hit.items():
-                            fobj.write("{}: {}\n".format(param, specifics))
-                        fobj.write("\n")
-            else:
-                fobj.write("{}\n".format(value))
+    if type(response) == dict:
+        show_response(response, "find.txt")
+    else:
+        pass
 
 def catalogue():
     pass
@@ -124,9 +142,12 @@ def cubes(username: str, password: str, selection: str, area: str = "Alle", page
     
     request = requests.get("https://www-genesis.destatis.de/genesisWS/rest/2020/catalogue/cubes?",
                            params = params)
-    print(request.status_code)
+    #print(request.status_code)
     response = request.json()
-    print(response)
+    if type(response) == dict:
+        show_response(response, "cubes.txt")
+    else:
+        pass
 
 def cubes2statistic(username: str, password: str, name: str, selection: str, area: str = "Alle", pagelength: int = 100, language: str = "de"):
     '''
@@ -166,9 +187,12 @@ def cubes2statistic(username: str, password: str, name: str, selection: str, are
     
     request = requests.get("https://www-genesis.destatis.de/genesisWS/rest/2020/catalogue/cubes2statistic?",
                            params = params)
-    print(request.status_code)
+    # print(request.status_code)
     response = request.json()
-    print(response)
+    if type(response) == dict:
+        show_response(response, "cubes2statistic.txt")
+    else:
+        pass
 
 def cubes2variable(username: str, password: str, name: str, selection: str, area: str = "Alle", pagelength: int = 100, language: str = "de"):
     '''
@@ -207,8 +231,11 @@ def cubes2variable(username: str, password: str, name: str, selection: str, area
     
     request = requests.get("https://www-genesis.destatis.de/genesisWS/rest/2020/catalogue/cubes2variable?",
                            params = params)
-    print(request.status_code)
+    # print(request.status_code)
     response = request.json()
-    print(response)
+    if type(response) == dict:
+        show_response(response, "cubes2variable.txt")
+    else:
+        pass
 
 # ... work in progress ... :-)

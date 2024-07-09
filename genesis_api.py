@@ -1,38 +1,42 @@
 import requests # Documentation: http://requests.readthedocs.io
 
-def show_response(response: dict, path: str):
+def show_response(response: dict, path: str = "search_hits.txt"):
     
-    with open(path,"w") as fobj:
+    if type(response) == dict:
+    
+        with open(path,"w") as fobj:
 
-        for section, content in response.items():
-            
-            # Formatting and writing of section titles
-            fobj.write("{:*^50}\n".format(section))
-            
-            # Formatting and writing of dictionaries
-            if type(content) == dict:
-                for param, specifics in content.items():
-                    fobj.write("{}: {}\n".format(param, specifics))
-                fobj.write("\n")
-            
-            # Formatting and writing of lists
-            elif type(content) == list:
+            for section, content in response.items():
+                
+                # Formatting and writing of section titles
+                fobj.write("{:*^50}\n".format(section))
+                
+                # Formatting and writing of dictionaries
+                if type(content) == dict:
+                    for param, specifics in content.items():
+                        fobj.write("{}: {}\n".format(param, specifics))
+                    fobj.write("\n")
+                
+                # Formatting and writing of lists
+                elif type(content) == list:
 
-                fobj.write("Search hits:{}\n\n".format(len(content)))
+                    fobj.write("Search hits:{}\n\n".format(len(content)))
 
-                for elem in content:
-                    if type(elem) == dict:
-                        for param, specifics in elem.items():
-                            fobj.write("{}: {}\n".format(param, specifics))
-                        fobj.write("\n")
-                    else:
-                        fobj.write("{}\n".format(elem))
-                        fobj.write("\n")
-            
-            # Formatting and writing of other information
-            else:
-                fobj.write("{}\n".format(content))
-                fobj.write("\n")
+                    for elem in content:
+                        if type(elem) == dict:
+                            for param, specifics in elem.items():
+                                fobj.write("{}: {}\n".format(param, specifics))
+                            fobj.write("\n")
+                        else:
+                            fobj.write("{}\n".format(elem))
+                            fobj.write("\n")
+                
+                # Formatting and writing of other information
+                else:
+                    fobj.write("{}\n".format(content))
+                    fobj.write("\n")
+    else:
+        pass
 
 def whoami():
     '''
@@ -69,7 +73,7 @@ def logincheck(username: str, password: str, language: str = "de"):
     #print(request.text)
 
 def find(username: str, password: str, term: str, category: str = "all", 
-         pagelength: int = 100, language: str = "de"):
+         pagelength: int = 100, language: str = "de") -> dict:
     '''
     Method for finding information based on one or more search terms.
     Returns lists of fitting objects (e.g. tables, time series).
@@ -102,17 +106,13 @@ def find(username: str, password: str, term: str, category: str = "all",
     request = requests.get("https://www-genesis.destatis.de/genesisWS/rest/2020/find/find?", 
                            params = params)
     # print(request.status_code)
-    response = request.json()
-    if type(response) == dict:
-        show_response(response, "find_hits.txt")
-    else:
-        pass
+    return request.json()
 
 def catalogue():
     pass
 
 def cubes(username: str, password: str, selection: str, area: str = "Alle", 
-          pagelength: int = 100, language: str = "de"):
+          pagelength: int = 100, language: str = "de") -> dict:
     '''
     Method for listing data cubes. 
     Returns a list of data cubes.
@@ -149,14 +149,10 @@ def cubes(username: str, password: str, selection: str, area: str = "Alle",
     request = requests.get("https://www-genesis.destatis.de/genesisWS/rest/2020/catalogue/cubes?",
                            params = params)
     #print(request.status_code)
-    response = request.json()
-    if type(response) == dict:
-        show_response(response, "cubes_hits.txt")
-    else:
-        pass
+    return request.json()
 
 def cubes2statistic(username: str, password: str, name: str, selection: str, 
-                    area: str = "Alle", pagelength: int = 100, language: str = "de"):
+                    area: str = "Alle", pagelength: int = 100, language: str = "de") -> dict:
     '''
     Method for listing data cubes fitting a selected statistic.
     Returns a list of data cubes.
@@ -195,14 +191,10 @@ def cubes2statistic(username: str, password: str, name: str, selection: str,
     request = requests.get("https://www-genesis.destatis.de/genesisWS/rest/2020/catalogue/cubes2statistic?",
                            params = params)
     # print(request.status_code)
-    response = request.json()
-    if type(response) == dict:
-        show_response(response, "cubes2statistic_hits.txt")
-    else:
-        pass
+    return request.json()
 
 def cubes2variable(username: str, password: str, name: str, selection: str, 
-                   area: str = "Alle", pagelength: int = 100, language: str = "de"):
+                   area: str = "Alle", pagelength: int = 100, language: str = "de") -> dict:
     '''
     Method for listing data cubes fitting a selected variable.
     Returns a list of data cubes.
@@ -240,15 +232,11 @@ def cubes2variable(username: str, password: str, name: str, selection: str,
     request = requests.get("https://www-genesis.destatis.de/genesisWS/rest/2020/catalogue/cubes2variable?",
                            params = params)
     # print(request.status_code)
-    response = request.json()
-    if type(response) == dict:
-        show_response(response, "cubes2variable_hits.txt")
-    else:
-        pass
+    return request.json()
 
 def jobs(username: str, password: str, selection: str, searchcriterion: str, 
-         sortcriterion: str, kind: str = "Alle", area: str = "Alle", 
-         pagelength: int = 100, language: str = "de"):
+         sortcriterion: str, type: str = "Alle", area: str = "Alle", 
+         pagelength: int = 100, language: str = "de")-> dict:
     '''
     Method for listing jobs. 
     Returns a list of jobs.
@@ -294,7 +282,7 @@ def jobs(username: str, password: str, selection: str, searchcriterion: str,
         "selection": selection,
         "searchcriterion": searchcriterion,
         "sortcriterion": sortcriterion,
-        "type": kind,
+        "type": type,
         "area": area,        
         "pagelength": pagelength,
         "language": language
@@ -304,15 +292,11 @@ def jobs(username: str, password: str, selection: str, searchcriterion: str,
                            params = params)
     
     # print(request.status_code)
-    response = request.json()
-    if type(response) == dict:
-        show_response(response, "jobs_hits.txt")
-    else:
-        pass
+    return request.json()
 
 def modifieddata(username: str, password: str, selection: str, date: str, 
-                 kind: str = "Alle", pagelength: int = 100, 
-                 language: str = "de"):
+                 type: str = "Alle", pagelength: int = 100, 
+                 language: str = "de") -> dict:
     '''
     Method for listing objects updated as of a specified date. 
     Returns a list of updated objects.
@@ -337,7 +321,7 @@ def modifieddata(username: str, password: str, selection: str, date: str,
         "username": username,
         "password": password,
         "selection": selection,
-        "type": kind,
+        "type": type,
         "date": date,
         "pagelength": pagelength,
         "language": language
@@ -347,13 +331,9 @@ def modifieddata(username: str, password: str, selection: str, date: str,
                            params = params)
 
     #print(request.status_code)
-    response = request.json()
-    if type(response) == dict:
-        show_response(response, "modifieddata_hits.txt")
-    else:
-        pass
+    return request.json()
 
-def qualitysigns(language: str = "de"):
+def qualitysigns(language: str = "de") -> dict:
     '''
     Method for listing quality indicators. 
     Returns a list of quality indicators.
@@ -372,14 +352,10 @@ def qualitysigns(language: str = "de"):
                            params = params)
         
     #print(request.status_code)
-    response = request.json()
-    if type(response) == dict:
-        show_response(response, "qualitysigns_hits.txt")
-    else:
-        pass
+    return request.json()
 
 def results(username: str, password: str, selection: str, area: str = "Alle",
-            pagelength: int = 100, language: str = "de"):
+            pagelength: int = 100, language: str = "de") -> dict:
     '''
     Method for listing tables. 
     Returns a list of tables.
@@ -417,10 +393,88 @@ def results(username: str, password: str, selection: str, area: str = "Alle",
                            params = params)
 
     #print(request.status_code)
-    response = request.json()
-    if type(response) == dict:
-        show_response(response, "results_hits.txt")
-    else:
-        pass
+    return request.json()
+
+def statistics(username: str, password: str, selection: str, 
+               searchcriterion: str = "code", sortcriterion: str = "code",
+               pagelength: int = 100, language: str = "de") -> dict:
+    '''
+    Method for listing statistics. 
+    Returns a list of statistics.
+
+    Parameters required:
+    - username: "User name of GENESIS account"
+    - password: "Password of GENESIS account"
+    - selection: "Code of statistics" (use of * possible)
+    - searchcriterion:
+    --- "Code" = default
+    --- "Inhalt"
+    - sortcriterion:
+    --- "Code" = default
+    --- "Inhalt"
+    - pagelength: 1 up to 2500, 100 = default
+    - language:
+    --- "de" (German) = default
+    --- "en" (English)
+    '''
+    
+    params = {
+        "username": username,
+        "password": password,
+        "selection": selection,
+        "searchcriterion": searchcriterion,
+        "sortcriterion": sortcriterion,
+        "pagelength": pagelength,
+        "language": language
+        }
+    
+    request = requests.get("https://www-genesis.destatis.de/genesisWS/rest/2020/catalogue/statistics?",
+                           params = params)
+
+    #print(request.status_code)
+    return request.json()
+
+def statistics2variable(username: str, password: str, name: str, 
+                        selection: str, area: str = "Alle",
+                        searchcriterion: str = "code", 
+                        sortcriterion: str = "code",
+                        pagelength: int = 100, language: str = "de"):
+    '''
+    Method for listing statistics fitting a selected variable.
+    Returns a list of statistics fitting a selected variable.
+
+    Parameters required:
+    - username: "User name of GENESIS account"
+    - password: "Password of GENESIS account"
+    - selection: "Code of statistics" (use of * possible)
+    - searchcriterion:
+    --- "Code" = default
+    --- "Inhalt"
+    - sortcriterion:
+    --- "Code" = default
+    --- "Inhalt"
+    - pagelength: 1 up to 2500, 100 = default
+    - language:
+    --- "de" (German) = default
+    --- "en" (English)
+    '''
+    
+    params = {
+        "username": username,
+        "password": password,
+        "name": name,
+        "selection": selection,
+        "area": area,
+        "searchcriterion": searchcriterion,
+        "sortcriterion": sortcriterion,
+        "pagelength": pagelength,
+        "language": language
+        }
+    
+    request = requests.get("https://www-genesis.destatis.de/genesisWS/rest/2020/catalogue/statistics2variable?",
+                           params = params)
+    
+    #print(request.status_code)
+    return request.json()
 
 # ... work in progress ... :-)

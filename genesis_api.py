@@ -38,7 +38,15 @@ def show(response: dict, path: str = "search_hits.txt"):
     else:
         pass
 
-def whoami():
+def request(url: str, params: dict = None) -> dict:
+    
+    response = requests.get(url, params)
+
+    #print(response.status_code)
+    #print(response.text)
+    return response.json()
+
+def whoami() -> dict:
     '''
     Method for testing the address.
     Returns the caller's IP address and hostname.
@@ -46,11 +54,14 @@ def whoami():
     Parameters required:
     None
     '''
-    request = requests.get("https://www-genesis.destatis.de/genesisWS/rest/2020/helloworld/whoami")
-    print(request.status_code)
-    print(request.text)
+    URL = "https://www-genesis.destatis.de/genesisWS/rest/2020/helloworld/whoami"
+    
+    return request(URL)
 
-def logincheck(username: str, password: str, language: str = "de"):
+def logincheck(# Login details
+               username: str, password: str,
+               # General
+               language: str = "de") -> dict:
     '''
     Method for testing system login with access data.
     Confirms or denies successful system login.
@@ -62,18 +73,24 @@ def logincheck(username: str, password: str, language: str = "de"):
     --- "de" (German) = default
     --- "en" (English)
     '''
+    URL = "https://www-genesis.destatis.de/genesisWS/rest/2020/helloworld/logincheck?"
+
     params = {
         "username": username,
         "password": password,
         "language": language
         }
-    request = requests.get("https://www-genesis.destatis.de/genesisWS/rest/2020/helloworld/logincheck?", 
-                           params = params)
-    print(request.status_code)
-    #print(request.text)
+    
+    return request(URL, params)
 
-def find(*, username: str, password: str, term: str, category: str = "all",
-         pagelength: int = 100, language: str = "de") -> dict:
+def find(# Login details
+         username: str, password: str,
+         # Custom
+         term: str, category: str = "all",
+         # List control
+         pagelength: int = 100,
+         # General
+         language: str = "de") -> dict:
     '''
     Returns lists of objects (e.g. tables, time series) fitting one or more search terms.
 
@@ -93,6 +110,7 @@ def find(*, username: str, password: str, term: str, category: str = "all",
     --- "de" (German) = default
     --- "en" (English)
     '''
+    URL = "https://www-genesis.destatis.de/genesisWS/rest/2020/find/find?"
 
     params = {
         "username": username,
@@ -103,14 +121,16 @@ def find(*, username: str, password: str, term: str, category: str = "all",
         "language": language
         }
     
-    request = requests.get("https://www-genesis.destatis.de/genesisWS/rest/2020/find/find?",
-                           params = params)
-    
-    # print(request.status_code)
-    return request.json()
-    
-def cubes(*, username: str, password: str, selection: str, area: str = "Alle",
-          pagelength: int = 100, language: str = "de") -> dict:
+    return request(URL, params)
+
+def cubes(# Login details
+          username: str, password: str,
+          # Filter
+          selection: str, area: str = "Alle",
+          # List control
+          pagelength: int = 100,
+          # General
+          language: str = "de") -> dict:
     '''
     Returns a list of data cubes.
 
@@ -133,6 +153,7 @@ def cubes(*, username: str, password: str, selection: str, area: str = "Alle",
     --- "de" (German) = default
     --- "en" (English)
     '''
+    URL = "https://www-genesis.destatis.de/genesisWS/rest/2020/catalogue/cubes?"
     
     params = {
         "username": username,
@@ -143,14 +164,15 @@ def cubes(*, username: str, password: str, selection: str, area: str = "Alle",
         "language": language
         }
     
-    request = requests.get("https://www-genesis.destatis.de/genesisWS/rest/2020/catalogue/cubes?",
-                           params = params)
-    
-    #print(request.status_code)
-    return request.json()
+    return request(URL, params)
 
-def cubes2statistic(*, username: str, password: str, name: str, selection: str,
-                    area: str = "Alle", pagelength: int = 100,
+def cubes2statistic(# Login details
+                    username: str, password: str,
+                    # Filter
+                    name: str, selection: str, area: str = "Alle",
+                    # List control
+                    pagelength: int = 100,
+                    # General
                     language: str = "de") -> dict:
     '''
     Returns a list of data cubes fitting a selected statistic.
@@ -175,7 +197,8 @@ def cubes2statistic(*, username: str, password: str, name: str, selection: str,
     --- "de" (German) = default
     --- "en" (English)
     '''
-    
+    URL = "https://www-genesis.destatis.de/genesisWS/rest/2020/catalogue/cubes2statistic?"
+
     params = {
         "username": username,
         "password": password,
@@ -186,15 +209,16 @@ def cubes2statistic(*, username: str, password: str, name: str, selection: str,
         "language": language
         }
     
-    request = requests.get("https://www-genesis.destatis.de/genesisWS/rest/2020/catalogue/cubes2statistic?",
-                           params = params)
-    
-    # print(request.status_code)
-    return request.json()
+    return request(URL, params)
 
-def cubes2variable(*, username: str, password: str, name: str, selection: str,
-                   area: str = "Alle", pagelength: int = 100,
-                   language: str = "de") -> dict:
+def cubes2variable(# Login details
+        username: str, password: str,
+        # Filter
+        name: str, selection: str, area: str = "Alle",
+        # List control
+        pagelength: int = 100,
+        # General
+        language: str = "de") -> dict:
     '''
     Returns a list of data cubes fitting a selected variable.
 
@@ -218,6 +242,7 @@ def cubes2variable(*, username: str, password: str, name: str, selection: str,
     --- "de" (German) = default
     --- "en" (English)
     '''
+    URL = "https://www-genesis.destatis.de/genesisWS/rest/2020/catalogue/cubes2variable?"
 
     params = {
         "username": username,
@@ -229,14 +254,17 @@ def cubes2variable(*, username: str, password: str, name: str, selection: str,
         "language": language
         }
     
-    request = requests.get("https://www-genesis.destatis.de/genesisWS/rest/2020/catalogue/cubes2variable?",
-                           params = params)
-    # print(request.status_code)
-    return request.json()
+    return request(URL, params)
 
-def jobs(*, username: str, password: str, selection: str, searchcriterion: str,
-         sortcriterion: str, type: str = "Alle", area: str = "Alle",
-         pagelength: int = 100, language: str = "de")-> dict:
+def jobs(# Login details
+        username: str, password: str,
+        # Filter
+        searchcriterion: str, selection: str, sortcriterion: str,
+        area: str = "Alle", type: str = "Alle",
+        # List control
+        pagelength: int = 100,
+        # General
+        language: str = "de") -> dict:
     '''
     Returns a list of jobs.
 
@@ -275,26 +303,29 @@ def jobs(*, username: str, password: str, selection: str, searchcriterion: str,
     --- "de" (German) = default
     --- "en" (English)
     '''    
+    URL = "https://www-genesis.destatis.de/genesisWS/rest/2020/catalogue/jobs?"
     params = {
         "username": username,
         "password": password,
-        "selection": selection,
         "searchcriterion": searchcriterion,
+        "selection": selection,
         "sortcriterion": sortcriterion,
+        "area": area,
         "type": type,
-        "area": area,        
         "pagelength": pagelength,
         "language": language
         }
     
-    request = requests.get("https://www-genesis.destatis.de/genesisWS/rest/2020/catalogue/jobs?",
-                           params = params)
-    
-    # print(request.status_code)
-    return request.json()
+    return request(URL, params)
 
-def modifieddata(*, username: str, password: str, selection: str, date: str,
-                 type: str = "Alle", pagelength: int = 100, language: str = "de") -> dict:
+def modifieddata(# Login details
+        username: str, password: str,
+        # Filter
+        date: str, selection: str, type: str = "Alle",
+        # List control
+        pagelength: int = 100,
+        # General
+        language: str = "de") -> dict:
     '''
     Returns a list of updated objects as of a specified date. 
 
@@ -313,24 +344,21 @@ def modifieddata(*, username: str, password: str, selection: str, date: str,
     --- "de" (German) = default
     --- "en" (English)
     '''
-    
+    URL = "https://www-genesis.destatis.de/genesisWS/rest/2020/catalogue/modifieddata?"
     params = {
         "username": username,
         "password": password,
+        "date": date,
         "selection": selection,
         "type": type,
-        "date": date,
         "pagelength": pagelength,
         "language": language
         }
     
-    request = requests.get("https://www-genesis.destatis.de/genesisWS/rest/2020/catalogue/modifieddata?",
-                           params = params)
+    return request(URL, params)
 
-    #print(request.status_code)
-    return request.json()
-
-def qualitysigns(*, language: str = "de") -> dict:
+def qualitysigns(# General
+        language: str = "de") -> dict:
     '''
     Returns a list of quality indicators.
 
@@ -339,19 +367,22 @@ def qualitysigns(*, language: str = "de") -> dict:
     --- "de" (German) = default
     --- "en" (English)
     '''
+    URL = "https://www-genesis.destatis.de/genesisWS/rest/2020/catalogue/qualitysigns?"
     
     params = {
         "language": language
         }
     
-    request = requests.get("https://www-genesis.destatis.de/genesisWS/rest/2020/catalogue/qualitysigns?",
-                           params = params)
-        
-    #print(request.status_code)
-    return request.json()
+    return request(URL, params)
 
-def results(*, username: str, password: str, selection: str, area: str = "Alle",
-            pagelength: int = 100, language: str = "de") -> dict:
+def results(# Login details
+        username: str, password: str,
+        # Filter
+        selection: str, area: str = "Alle",
+        # List control
+        pagelength: int = 100,
+        # General
+        language: str = "de") -> dict:
     '''
     Returns a list of tables.
 
@@ -374,7 +405,8 @@ def results(*, username: str, password: str, selection: str, area: str = "Alle",
     --- "de" (German) = default
     --- "en" (English)
     '''
-    
+    URL = "https://www-genesis.destatis.de/genesisWS/rest/2020/catalogue/results?"
+
     params = {
         "username": username,
         "password": password,
@@ -384,15 +416,16 @@ def results(*, username: str, password: str, selection: str, area: str = "Alle",
         "language": language
         }
     
-    request = requests.get("https://www-genesis.destatis.de/genesisWS/rest/2020/catalogue/results?",
-                           params = params)
+    return request(URL, params)
 
-    #print(request.status_code)
-    return request.json()
-
-def statistics(*, username: str, password: str, selection: str,
-               searchcriterion: str = "code", sortcriterion: str = "code",
-               pagelength: int = 100, language: str = "de") -> dict:
+def statistics(# Login details
+        username: str, password: str,
+        # Filter
+        selection: str, searchcriterion: str = "code", sortcriterion: str = "code",
+        # List control
+        pagelength: int = 100,
+        # General
+        language: str = "de") -> dict:
     '''
     Returns a list of statistics.
 
@@ -411,7 +444,8 @@ def statistics(*, username: str, password: str, selection: str,
     --- "de" (German) = default
     --- "en" (English)
     '''
-    
+    URL = "https://www-genesis.destatis.de/genesisWS/rest/2020/catalogue/statistics?"
+
     params = {
         "username": username,
         "password": password,
@@ -422,16 +456,17 @@ def statistics(*, username: str, password: str, selection: str,
         "language": language
         }
     
-    request = requests.get("https://www-genesis.destatis.de/genesisWS/rest/2020/catalogue/statistics?",
-                           params = params)
+    return request(URL, params)
 
-    #print(request.status_code)
-    return request.json()
-
-def statistics2variable(*, username: str, password: str, name: str, selection: str,
-                        area: str = "Alle", searchcriterion: str = "code",
-                        sortcriterion: str = "code", pagelength: int = 100,
-                        language: str = "de") -> dict:
+def statistics2variable(# Login details
+        username: str, password: str,
+        # Filter
+        name: str, selection: str, area: str = "Alle", 
+        searchcriterion: str = "code", sortcriterion: str = "code",
+        # List control
+        pagelength: int = 100,
+        # General
+        language: str = "de") -> dict:
     '''
     Returns a list of statistics fitting a selected variable.
 
@@ -461,6 +496,7 @@ def statistics2variable(*, username: str, password: str, name: str, selection: s
     --- "de" (German) = default
     --- "en" (English)
     '''
+    URL = "https://www-genesis.destatis.de/genesisWS/rest/2020/catalogue/statistics2variable?"
     
     params = {
         "username": username,
@@ -474,15 +510,17 @@ def statistics2variable(*, username: str, password: str, name: str, selection: s
         "language": language
         }
     
-    request = requests.get("https://www-genesis.destatis.de/genesisWS/rest/2020/catalogue/statistics2variable?",
-                           params = params)
-    
-    #print(request.status_code)
-    return request.json()
+    return request(URL, params)
 
-def tables(*, username: str, password: str, selection: str, area: str = "Alle",
-           searchcriterion: str = "code", sortcriterion: str = "code",
-           pagelength: int = 100, language: str = "de") -> dict:
+def tables(# Login details
+        username: str, password: str,
+        # Filter
+        selection: str, area: str = "Alle",
+        searchcriterion: str = "code", sortcriterion: str = "code",
+        # List control
+        pagelength: int = 100,
+        # General
+        language: str = "de") -> dict:
     '''
     Returns a list of tables.
     
@@ -511,7 +549,8 @@ def tables(*, username: str, password: str, selection: str, area: str = "Alle",
     --- "de" (German) = default
     --- "en" (English)
     '''
-
+    URL = "https://www-genesis.destatis.de/genesisWS/rest/2020/catalogue/tables?"
+    
     params = {
         "username": username,
         "password": password,
@@ -523,15 +562,16 @@ def tables(*, username: str, password: str, selection: str, area: str = "Alle",
         "language": language
         }
     
-    request = requests.get("https://www-genesis.destatis.de/genesisWS/rest/2020/catalogue/tables?",
-                           params = params)
-    
-    #print(request.status_code)
-    return request.json()
+    return request(URL, params)
 
-def tables2statistic(*, username: str, password: str, name: str, selection: str,
-                    area: str = "Alle", pagelength: int = 100, 
-                    language: str = "de") -> dict:
+def tables2statistic(# Login details
+        username: str, password: str,
+        # Filter
+        name: str, selection: str, area: str = "Alle",
+        # List control
+        pagelength: int = 100,
+        # General
+        language: str = "de") -> dict:
     '''
     Returns a list of tables fitting a selected statistic.
     
@@ -555,6 +595,7 @@ def tables2statistic(*, username: str, password: str, name: str, selection: str,
     --- "de" (German) = default
     --- "en" (English)
     '''
+    URL = "https://www-genesis.destatis.de/genesisWS/rest/2020/catalogue/tables2statistic?"
 
     params = {
         "username": username,
@@ -566,15 +607,16 @@ def tables2statistic(*, username: str, password: str, name: str, selection: str,
         "language": language
         }
     
-    request = requests.get("https://www-genesis.destatis.de/genesisWS/rest/2020/catalogue/tables2statistic?",
-                           params = params)
+    return request(URL, params)
     
-    #print(request.status_code)
-    return request.json()
-
-def tables2variable(*, username: str, password: str, name: str, selection: str,
-                    area: str = "Alle", pagelength: int = 100, 
-                    language: str = "de") -> dict:
+def tables2variable(# Login details
+        username: str, password: str,
+        # Filter
+        name: str, selection: str, area: str = "Alle",
+        # List control
+        pagelength: int = 100,
+        # General
+        language: str = "de") -> dict:
     '''
     Returns a list of tables fitting a selected variable.
     
@@ -598,6 +640,7 @@ def tables2variable(*, username: str, password: str, name: str, selection: str,
     --- "de" (German) = default
     --- "en" (English)
     '''
+    URL = "https://www-genesis.destatis.de/genesisWS/rest/2020/catalogue/tables2variable?"
 
     params = {
         "username": username,
@@ -609,14 +652,16 @@ def tables2variable(*, username: str, password: str, name: str, selection: str,
         "language": language
         }
     
-    request = requests.get("https://www-genesis.destatis.de/genesisWS/rest/2020/catalogue/tables2variable?",
-                           params = params)
-    
-    #print(request.status_code)
-    return request.json()
+    return request(URL, params)
 
-def terms(*, username: str, password: str, selection: str, pagelength: int = 100,
-           language: str = "de") -> dict:
+def terms(# Login details
+        username: str, password: str,
+        # Filter
+        selection: str,
+        # List control
+        pagelength: int = 100,
+        # General
+        language: str = "de") -> dict:
     '''
     Returns a list of terms.
     
@@ -629,6 +674,7 @@ def terms(*, username: str, password: str, selection: str, pagelength: int = 100
     --- "de" (German) = default
     --- "en" (English)
     '''
+    URL = "https://www-genesis.destatis.de/genesisWS/rest/2020/catalogue/terms?"
 
     params = {
         "username": username,
@@ -638,14 +684,16 @@ def terms(*, username: str, password: str, selection: str, pagelength: int = 100
         "language": language
         }
     
-    request = requests.get("https://www-genesis.destatis.de/genesisWS/rest/2020/catalogue/terms?",
-                           params = params)
-    
-    #print(request.status_code)
-    return request.json()
+    return request(URL, params)
 
-def timeseries(*, username: str, password: str, selection: str, area: str = "Alle",
-               pagelength: int = 100, language: str = "de") -> dict:
+def timeseries(# Login details
+        username: str, password: str,
+        # Filter
+        selection: str, area: str = "Alle",
+        # List control
+        pagelength: int = 100,
+        # General
+        language: str = "de") -> dict:
     '''
     Returns a list of time series.
     
@@ -668,6 +716,7 @@ def timeseries(*, username: str, password: str, selection: str, area: str = "All
     --- "de" (German) = default
     --- "en" (English)
     '''
+    URL = "https://www-genesis.destatis.de/genesisWS/rest/2020/catalogue/timeseries?"
 
     params = {
         "username": username,
@@ -678,15 +727,16 @@ def timeseries(*, username: str, password: str, selection: str, area: str = "All
         "language": language
         }
     
-    request = requests.get("https://www-genesis.destatis.de/genesisWS/rest/2020/catalogue/timeseries?",
-                           params = params)
-    
-    #print(request.status_code)
-    return request.json()
+    return request(URL, params)
 
-def timeseries2statistic(*, username: str, password: str, name: str, selection: str,
-                         area: str = "Alle", pagelength: int = 100,
-                         language: str = "de") -> dict:
+def timeseries2statistic(# Login details
+        username: str, password: str,
+        # Filter
+        name: str, selection: str, area: str = "Alle",
+        # List control
+        pagelength: int = 100,
+        # General
+        language: str = "de") -> dict:
     '''
     Returns a list of time series fitting a selected statistic.
     
@@ -710,6 +760,7 @@ def timeseries2statistic(*, username: str, password: str, name: str, selection: 
     --- "de" (German) = default
     --- "en" (English)
     '''
+    URL = "https://www-genesis.destatis.de/genesisWS/rest/2020/catalogue/timeseries2statistic?"
 
     params = {
         "username": username,
@@ -721,15 +772,16 @@ def timeseries2statistic(*, username: str, password: str, name: str, selection: 
         "language": language
         }
     
-    request = requests.get("https://www-genesis.destatis.de/genesisWS/rest/2020/catalogue/timeseries2statistic?",
-                           params = params)
-    
-    #print(request.status_code)
-    return request.json()
+    return request(URL, params)
 
-def timeseries2variable(*, username: str, password: str, name: str, selection: str,
-                        area: str = "Alle", pagelength: int = 100,
-                        language: str = "de") -> dict:
+def timeseries2variable(# Login details
+        username: str, password: str,
+        # Filter
+        name: str, selection: str, area: str = "Alle",
+        # List control
+        pagelength: int = 100,
+        # General
+        language: str = "de") -> dict:
     '''
     Returns a list of time series fitting a selected variable.
     
@@ -753,6 +805,7 @@ def timeseries2variable(*, username: str, password: str, name: str, selection: s
     --- "de" (German) = default
     --- "en" (English)
     '''
+    URL = "https://www-genesis.destatis.de/genesisWS/rest/2020/catalogue/timeseries2variable?"
 
     params = {
         "username": username,
@@ -764,15 +817,17 @@ def timeseries2variable(*, username: str, password: str, name: str, selection: s
         "language": language
         }
     
-    request = requests.get("https://www-genesis.destatis.de/genesisWS/rest/2020/catalogue/timeseries2variable?",
-                           params = params)
-    
-    #print(request.status_code)
-    return request.json()
+    return request(URL, params)
 
-def values(*, username: str, password: str, selection: str, area: str = "Alle",
-           searchcriterion: str = "code", sortcriterion: str = "code",
-           pagelength: int = 100, language: str = "de") -> dict:
+def values(# Login details
+        username: str, password: str,
+        # Filter
+        selection: str, area: str = "Alle", 
+        searchcriterion: str = "code", sortcriterion: str = "code",
+        # List control
+        pagelength: int = 100,
+        # General
+        language: str = "de") -> dict:
     '''
     Returns a list of values.
     
@@ -801,7 +856,8 @@ def values(*, username: str, password: str, selection: str, area: str = "Alle",
     --- "de" (German) = default
     --- "en" (English)
     '''
-
+    URL = "https://www-genesis.destatis.de/genesisWS/rest/2020/catalogue/values?"
+    
     params = {
         "username": username,
         "password": password,
@@ -813,16 +869,17 @@ def values(*, username: str, password: str, selection: str, area: str = "Alle",
         "language": language
         }
     
-    request = requests.get("https://www-genesis.destatis.de/genesisWS/rest/2020/catalogue/values?",
-                           params = params)
-    
-    #print(request.status_code)
-    return request.json()
+    return request(URL, params)
 
-def values2variable(*, username: str, password: str, name: str, selection: str,
-                    area: str = "Alle", searchcriterion: str = "code",
-                    sortcriterion: str = "code", pagelength: int = 100,
-                    language: str = "de") -> dict:
+def values2variable(# Login details
+        username: str, password: str,
+        # Filter
+        name: str, selection: str, area: str = "Alle",
+        searchcriterion: str = "code", sortcriterion: str = "code",
+        # List control
+        pagelength: int = 100,
+        # General
+        language: str = "de") -> dict:
     '''
     Returns a list of values for a selected variable.
     
@@ -852,7 +909,8 @@ def values2variable(*, username: str, password: str, name: str, selection: str,
     --- "de" (German) = default
     --- "en" (English)
     '''
-
+    URL = "https://www-genesis.destatis.de/genesisWS/rest/2020/catalogue/values2variable?"
+    
     params = {
         "username": username,
         "password": password,
@@ -865,15 +923,17 @@ def values2variable(*, username: str, password: str, name: str, selection: str,
         "language": language
         }
     
-    request = requests.get("https://www-genesis.destatis.de/genesisWS/rest/2020/catalogue/values2variable?",
-                           params = params)
-    
-    #print(request.status_code)
-    return request.json()
+    return request(URL, params)
 
-def variables(*, username: str, password: str, selection: str, area: str = "Alle",
-              searchcriterion: str = "code", sortcriterion: str = "code",
-              pagelength: int = 100, language: str = "de") -> dict:
+def variables(# Login details
+        username: str, password: str,
+        # Filter
+        selection: str, area: str = "Alle",
+        searchcriterion: str = "code", sortcriterion: str = "code",
+        # List control
+        pagelength: int = 100,
+        # General
+        language: str = "de") -> dict:
     '''
     Returns a list of variables.
     
@@ -902,7 +962,8 @@ def variables(*, username: str, password: str, selection: str, area: str = "Alle
     --- "de" (German) = default
     --- "en" (English)
     '''
-
+    URL = "https://www-genesis.destatis.de/genesisWS/rest/2020/catalogue/variables?"
+    
     params = {
         "username": username,
         "password": password,
@@ -914,16 +975,17 @@ def variables(*, username: str, password: str, selection: str, area: str = "Alle
         "language": language
         }
     
-    request = requests.get("https://www-genesis.destatis.de/genesisWS/rest/2020/catalogue/variables?",
-                           params = params)
-    
-    #print(request.status_code)
-    return request.json()
+    return request(URL, params)
 
-def variables2statistic(*, username: str, password: str, name: str, selection: str,
-                        area: str = "Alle", searchcriterion: str = "code",
-                        sortcriterion: str = "code", type: str = "alle",
-                        pagelength: int = 100, language: str = "de") -> dict:
+def variables2statistic(# Login details
+        username: str, password: str,
+        # Filter
+        name: str, selection: str, area: str = "Alle", searchcriterion: str = "code",
+        sortcriterion: str = "code", type: str = "Alle",
+        # List control
+        pagelength: int = 100,
+        # General
+        language: str = "de") -> dict:
     '''
     Returns a list of variables fitting a selected statistic.
     
@@ -962,7 +1024,8 @@ def variables2statistic(*, username: str, password: str, name: str, selection: s
     --- "de" (German) = default
     --- "en" (English)
     '''
-
+    URL = "https://www-genesis.destatis.de/genesisWS/rest/2020/catalogue/variables2statistic?"
+    
     params = {
         "username": username,
         "password": password,
@@ -976,10 +1039,6 @@ def variables2statistic(*, username: str, password: str, name: str, selection: s
         "language": language
         }
     
-    request = requests.get("https://www-genesis.destatis.de/genesisWS/rest/2020/catalogue/variables2statistic?",
-                           params = params)
-
-    #print(request.status_code)
-    return request.json()
+    return request(URL, params)
 
 # ... work in progress ... :-)

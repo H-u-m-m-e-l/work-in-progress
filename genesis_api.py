@@ -1,7 +1,87 @@
 import requests # Documentation: http://requests.readthedocs.io
 
-def show(response: dict, path: str = "search_hits.txt"):
+# OOP -  ... work in progress ... :-)
+class GenesisAPI:
+    def __init__(self, method: str, params: dict = None):
+        self.method = method
+        self.params = params
+        self.URL_BASIC = "https://www-genesis.destatis.de/genesisWS/rest/2020/"
+        self.URL_EXTENSION = {"whoami": "helloworld/whoami",
+                              "logincheck": "helloworld/logincheck?",
+                              "find": "find/find?",
+                              "cubes": "catalogue/cubes?",
+                              "cubes2statistic": "catalogue/cubes2statistic?",
+                              "cubes2variable": "catalogue/cubes2variable?",
+                              "jobs": "catalogue/jobs?",
+                              "modifieddata": "catalogue/modifieddata?",
+                              "qualitysigns": "catalogue/qualitysigns?",
+                              "results": "catalogue/results?",
+                              "statistics": "catalogue/statistics?",
+                              "statistics2variable": "catalogue/statistics2variable?",
+                              "tables": "catalogue/tables?",
+                              "tables2statistic": "catalogue/tables2statistic?",
+                              "tables2variable": "catalogue/tables2variable?",
+                              "terms": "catalogue/terms?",
+                              "timeseries": "catalogue/timeseries?",
+                              "timeseries2statistic": "catalogue/timeseries2statistic?",
+                              "timeseries2variable": "catalogue/timeseries2variable?",
+                              "values": "catalogue/values?",
+                              "values2variable": "catalogue/values2variable?",
+                              "variables": "catalogue/variables?",
+                              "variables2statistic": "catalogue/variables2statistic?"
+                              }
+        self.response = {}
+
+    def request(self) -> bool:
+        URL = self.URL_BASIC + self.URL_EXTENSION[self.method]
+        self.response = requests.get(URL, self.params).json()
+        return True
     
+    def show_hits(self, path: str = "search_hits.txt") -> bool:
+        if self.request():
+            with open(path,"w") as fobj:
+                for section, content in self.response.items():
+
+                    # Formatting and writing of section titles
+                    fobj.write(f"{section:*^50}\n")
+
+                    # Formatting and writing of dictionaries
+                    if type(content) == dict:
+                        for param, specifics in content.items():
+                            fobj.write(f"{param}: {specifics}\n")
+                        fobj.write("\n")
+                    
+                    # Formatting and writing of lists
+                    elif type(content) == list:
+                        fobj.write(f"Search hits:{len(content)}\n\n")
+
+                        for elem in content:
+                            if type(elem) == dict:
+                                for param, specifics in elem.items():
+                                    fobj.write(f"{param}: {specifics}\n")
+                                fobj.write("\n")
+                            else:
+                                fobj.write(f"{elem}\n")
+                                fobj.write("\n")
+                    
+                    # Formatting and writing of other information
+                    else:
+                        fobj.write(f"{content}\n")
+                        fobj.write("\n")
+            return True
+        else:
+            return False  
+
+
+# FP
+def request(url: str, params: dict = None) -> dict:
+    response = requests.get(url, params)
+
+    #print(response.status_code)
+    #print(response.text)
+    return response.json()
+
+def show_hits(response: dict, path: str = "search_hits.txt"):
     if type(response) == dict:
     
         with open(path,"w") as fobj:
@@ -37,14 +117,6 @@ def show(response: dict, path: str = "search_hits.txt"):
                     fobj.write("\n")
     else:
         pass
-
-def request(url: str, params: dict = None) -> dict:
-    
-    response = requests.get(url, params)
-
-    #print(response.status_code)
-    #print(response.text)
-    return response.json()
 
 def whoami() -> dict:
     '''

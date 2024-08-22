@@ -2,42 +2,80 @@ import requests # Documentation: http://requests.readthedocs.io
 
 # OOP -  ... work in progress ... :-)
 class GenesisAPI:
-    def __init__(self, method: str, params: dict = None):
-        self.method = method
-        self.params = params
-        self.URL_BASIC = "https://www-genesis.destatis.de/genesisWS/rest/2020/"
-        self.URL_EXTENSION = {"whoami": "helloworld/whoami",
-                              "logincheck": "helloworld/logincheck?",
-                              "find": "find/find?",
-                              "cubes": "catalogue/cubes?",
-                              "cubes2statistic": "catalogue/cubes2statistic?",
-                              "cubes2variable": "catalogue/cubes2variable?",
-                              "jobs": "catalogue/jobs?",
-                              "modifieddata": "catalogue/modifieddata?",
-                              "qualitysigns": "catalogue/qualitysigns?",
-                              "results": "catalogue/results?",
-                              "statistics": "catalogue/statistics?",
-                              "statistics2variable": "catalogue/statistics2variable?",
-                              "tables": "catalogue/tables?",
-                              "tables2statistic": "catalogue/tables2statistic?",
-                              "tables2variable": "catalogue/tables2variable?",
-                              "terms": "catalogue/terms?",
-                              "timeseries": "catalogue/timeseries?",
-                              "timeseries2statistic": "catalogue/timeseries2statistic?",
-                              "timeseries2variable": "catalogue/timeseries2variable?",
-                              "values": "catalogue/values?",
-                              "values2variable": "catalogue/values2variable?",
-                              "variables": "catalogue/variables?",
-                              "variables2statistic": "catalogue/variables2statistic?"
-                              }
-        self.response = {}
 
+    URL_BASIC = "https://www-genesis.destatis.de/genesisWS/rest/2020/"
+    URL_EXTENSION = {
+        "whoami": "helloworld/whoami",
+        "logincheck": "helloworld/logincheck?",
+        "find": "find/find?",
+        "cubes": "catalogue/cubes?",
+        "cubes2statistic": "catalogue/cubes2statistic?",
+        "cubes2variable": "catalogue/cubes2variable?",
+        "jobs": "catalogue/jobs?",
+        "modifieddata": "catalogue/modifieddata?",
+        "qualitysigns": "catalogue/qualitysigns?",
+        "results": "catalogue/results?",
+        "statistics": "catalogue/statistics?",
+        "statistics2variable": "catalogue/statistics2variable?",
+        "tables": "catalogue/tables?",
+        "tables2statistic": "catalogue/tables2statistic?",
+        "tables2variable": "catalogue/tables2variable?",
+        "terms": "catalogue/terms?",
+        "timeseries": "catalogue/timeseries?",
+        "timeseries2statistic": "catalogue/timeseries2statistic?",
+        "timeseries2variable": "catalogue/timeseries2variable?",
+        "values": "catalogue/values?",
+        "values2variable": "catalogue/values2variable?",
+        "variables": "catalogue/variables?",
+        "variables2statistic": "catalogue/variables2statistic?"
+        }
+    PARAMS = [
+        # Login details
+        "username",
+        "password",
+        # Custom
+        "category",
+        "term",
+        # Filter
+        "area",
+        "date",
+        "name",
+        "searchcriterion",
+        "selection",
+        "sortcriterion",
+        "type",
+        # List control
+        "pagelength",
+        # General
+        "language"
+        ]
+    
+    def __init__(self, *,
+                 # Data product
+                 product: str,
+                 # Login details
+                 username: str, password: str,
+                 # Custom
+                 category: str = "all", term: str = None,
+                 # Filter
+                 area: str = "Alle", date: str = None, name: str = None, searchcriterion: str = None,
+                 selection: str = None, sortcriterion: str = None, type: str = "Alle",
+                 # List control
+                 pagelength: int = 100,
+                 # General
+                 language: str = "de") -> None:
+        
+        self.response = {}
+        self.product = product
+        self.params = {param: eval(param) for param in GenesisAPI.PARAMS}
+    
     def request(self) -> bool:
-        URL = self.URL_BASIC + self.URL_EXTENSION[self.method]
+        URL = GenesisAPI.URL_BASIC + GenesisAPI.URL_EXTENSION[self.product]
         self.response = requests.get(URL, self.params).json()
         return True
     
-    def show_hits(self, path: str = "search_hits.txt") -> bool:
+    # TO-DO: Allow for txt-File only
+    def write(self, path: str = "search_hits.txt") -> bool:
         if self.request():
             with open(path,"w") as fobj:
                 for section, content in self.response.items():
@@ -71,7 +109,6 @@ class GenesisAPI:
             return True
         else:
             return False  
-
 
 # FP
 def request(url: str, params: dict = None) -> dict:
@@ -1112,5 +1149,3 @@ def variables2statistic(# Login details
         }
     
     return request(URL, params)
-
-# ... work in progress ... :-)

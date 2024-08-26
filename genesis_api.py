@@ -58,27 +58,31 @@ class GenesisAPI:
                  # Custom
                  category: str = "all", term: str = None,
                  # Filter
-                 area: str = "Alle", date: str = None, name: str = None, searchcriterion: str = None,
-                 selection: str = None, sortcriterion: str = None, type: str = "Alle",
+                 area: str = "Alle", date: str = None, name: str = None, 
+                 searchcriterion: str = None, selection: str = None, 
+                 sortcriterion: str = None, type: str = "Alle",
                  # List control
                  pagelength: int = 100,
                  # General
                  language: str = "de") -> None:
         
-        self.response = {}
         self.product = product
+        self.url = GenesisAPI.URL_BASIC + GenesisAPI.URL_EXTENSION[self.product]
         self.params = {param: eval(param) for param in GenesisAPI.PARAMS}
+
+        self.robj = None
+        self.json = {}
     
     def request(self) -> bool:
-        URL = GenesisAPI.URL_BASIC + GenesisAPI.URL_EXTENSION[self.product]
-        self.response = requests.get(URL, self.params).json()
+        self.robj = requests.get(self.url, self.params) # Response object
+        # To-Do: Response Status Codes ?
+        self.json = self.robj.json() # json response content
         return True
     
-    # TO-DO: Allow for txt-File only
-    def write(self, path: str = "search_hits.txt") -> bool:
+    def write_txt(self, filename: str) -> bool:
         if self.request():
-            with open(path,"w") as fobj:
-                for section, content in self.response.items():
+            with open(f"{filename}.txt","w") as fobj:
+                for section, content in self.json.items():
 
                     # Formatting and writing of section titles
                     fobj.write(f"{section:*^50}\n")
